@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsSection.style.display = 'none';
         foodItemsContainer.innerHTML = '';
 
-        fetch('https://food-scan2.vercel.app/api/', { // <-- send to example.com as requested
+        fetch('https://calorie-backend-eta.vercel.app/', { // <-- send to example.com as requested
             method: 'POST',
             body: formData
         })
