@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Scanner - Smart Calorie Counter</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>Food Scanner</h1>
+            </div>
+            <p class="tagline">Smart calorie counting made simple</p>
+        </header>
+
+        <main class="main-content">
+            <div class="upload-section">
+                <div class="upload-box" id="dropZone">
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    <div class="upload-content">
+                        <div class="upload-icon-container">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h2>Upload Food Image</h2>
+                        <p>Drag & drop your food image here</p>
+                        <p class="or-divider">or</p>
+                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                        <p class="upload-hint">Supported formats: JPG, PNG</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Analyzing your food image...</p>
+                <p class="loading-subtext">This may take a few moments</p>
+            </div>
+            
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2>Analysis Results</h2>
+                    <div class="total-calories">
+                        <div class="calories-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="calories-info">
+                            <h3>Total Calories</h3>
+                            <p class="calories-value" id="totalCalories">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-items" id="foodItems">
+                    <!-- Food items will be added here dynamically -->
+                </div>
+
+                <div class="results-footer">
+                    <p class="disclaimer">
+                        <i class="fas fa-info-circle"></i>
+                        Note: Calorie counts are estimates. Toggle items as primary to include them in the total.
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>Powered by AI & Nutrition Data</p>
+        </footer>
+    </div>
+
+    <script id="foodItemTemplate" type="text/template">
+        <div class="food-item" data-id="${id}">
+            <div class="food-item-header">
+                <h3>${name}</h3>
+                <label class="primary-toggle">
+                    <input type="checkbox" class="primary-checkbox" ${is_primary ? 'checked' : ''} onchange="togglePrimary('${id}')">
+                    <span>Primary Item</span>
+                </label>
+            </div>
+            
+            <div class="food-details">
+                <div class="quantity-control">
+                    <label>Quantity:</label>
+                    <div class="quantity-input">
+                        <button class="quantity-btn minus" onclick="updateQuantity('${id}', -1)">-</button>
+                        <input type="number" class="quantity-value" value="${quantity}" min="1" onchange="updateQuantity('${id}', 0)">
+                        <button class="quantity-btn plus" onclick="updateQuantity('${id}', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="serving-size-container">
+                    <label>Serving Size:</label>
+                    <select class="serving-size-select" onchange="updateServingSize('${id}', this.value)">
+                        ${Object.entries(serving_info).map(([size, info]) => `
+                            <option value="${size}" ${size === serving_size ? 'selected' : ''}>
+                                ${size}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+
+                <div class="nutrition-facts">
+                    <div class="nutrition-item">
+                        <i class="fas fa-fire"></i>
+                        <span class="nutrition-label">Calories:</span>
+                        <span class="nutrition-value calories">${calories}</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <i class="fas fa-drumstick-bite"></i>
+                        <span class="nutrition-label">Protein:</span>
+                        <span class="nutrition-value protein">${protein}g</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <i class="fas fa-bread-slice"></i>
+                        <span class="nutrition-label">Carbs:</span>
+                        <span class="nutrition-value carbs">${carbs}g</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <i class="fas fa-oil-can"></i>
+                        <span class="nutrition-label">Fat:</span>
+                        <span class="nutrition-value fat">${fat}g</span>
+                    </div>
+                </div>
+            </div>
+
+            ${!is_primary ? `
+                <p class="non-primary-note">
+                    <i class="fas fa-info-circle"></i>
+                    This item is not included in the total calories
+                </p>
+            ` : ''}
+        </div>
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html> 
